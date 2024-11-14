@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Lugares</title>
+    {% load static %}
+    <script src="{% static 'lugares.js' %}"></script> <!-- Carga el archivo lugares.js desde static -->
+</head>
+<body>
+    <h1>Lista de Lugares Disponibles</h1>
+    <a href="{% url 'crear_lugar' %}">Añadir Nuevo Lugar</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Capacidad</th>
+                <th>Disponible</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lugar in lugares %}
+                <tr id="lugar-row-{{ lugar.id }}">
+                    <td contenteditable="true" id="nombre-{{ lugar.id }}">{{ lugar.nombre }}</td>
+                    <td contenteditable="true" id="descripcion-{{ lugar.id }}">{{ lugar.descripcion }}</td>
+                    <td contenteditable="true" id="capacidad-{{ lugar.id }}">{{ lugar.capacidad }}</td>
+                    <td>
+                        <input type="checkbox" id="disponible-{{ lugar.id }}" {% if lugar.disponible %}checked{% endif %}>
+                    </td>
+                    <td>
+                        <button class="editar-btn" data-id="{{ lugar.id }}">Guardar</button> |
+                        <button class="eliminar-btn" data-id="{{ lugar.id }}">Eliminar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

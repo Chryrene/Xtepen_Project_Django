@@ -2,11 +2,129 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard de Administrador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Administrador - Sistema de Reservas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* Fondo blanco */
+            color: #000000; /* Texto en negro */
+        }
+    </style>
 </head>
 <body>
-    <h1>Bienvenido al Dashboard de Administración</h1>
-    <p>Aquí puedes gestionar las reservas y los usuarios.</p>
-    <!-- Agrega funcionalidades adicionales para el administrador -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-200 shadow-md">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-black">Reservas Admin</h2>
+            </div>
+            <nav class="mt-6">
+                <a href="{% url 'lista_reservas' %}" class="block px-4 py-2 text-black hover:bg-gray-300 hover:text-black">
+                    <span class="inline-block w-6 mr-2">📅</span>Reservas
+                </a>
+                <a href="{% url 'lista_lugares' %}" class="block px-4 py-2 text-black hover:bg-gray-300 hover:text-black">
+                    <span class="inline-block w-6 mr-2">📍</span>Lugares Disponibles
+                </a>
+                <a href="{% url 'crear_reserva' %}" class="block px-4 py-2 text-black hover:bg-gray-300 hover:text-black">
+                    <span class="inline-block w-6 mr-2">📝</span>Crear Reserva
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white">
+            <div class="container mx-auto px-6 py-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-semibold text-black">Bienvenido, Administrador</h1>
+                    <p class="text-sm text-gray-600">Último acceso: hace 1 hora</p>
+                </div>
+
+                <!-- Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6">
+                        <h3 class="text-3xl font-bold text-black">{{ numero_reservas }}</h3>
+                        <p class="text-gray-700">Reservas Actuales</p>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6">
+                        <h3 class="text-3xl font-bold text-black">350</h3>
+                        <p class="text-gray-700">Clientes Registrados</p>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6">
+                        <h3 class="text-3xl font-bold text-black">85%</h3>
+                        <p class="text-gray-700">Tasa de Ocupación</p>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6">
+                        <h3 class="text-3xl font-bold text-black">$25,000</h3>
+                        <p class="text-gray-700">Ingresos Mensuales</p>
+                    </div>
+                </div>
+
+                <!-- Reservation Details -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Chart Section -->
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-black">Reservas por Canal</h3>
+                        <p class="text-gray-700 mb-4">Estadísticas del mes</p>
+                        <div class="bg-gray-200 h-64 rounded flex items-center justify-center">
+                            <p class="text-gray-700">Gráfico de Reservas</p>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Table -->
+                    <div class="bg-gray-100 rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-black">Últimas Reservas</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 border-b border-gray-300 bg-gray-200 text-left text-xs leading-4 font-medium text-gray-700 uppercase tracking-wider">Cliente</th>
+                                        <th class="px-6 py-3 border-b border-gray-300 bg-gray-200 text-left text-xs leading-4 font-medium text-gray-700 uppercase tracking-wider">Fecha de Reserva</th>
+                                        <th class="px-6 py-3 border-b border-gray-300 bg-gray-200 text-left text-xs leading-4 font-medium text-gray-700 uppercase tracking-wider">Estado</th>
+                                        <th class="px-6 py-3 border-b border-gray-300 bg-gray-200 text-left text-xs leading-4 font-medium text-gray-700 uppercase tracking-wider">Precio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for reserva in ultimas_reservas %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                                            <div class="text-sm leading-5 font-medium text-black">{{ reserva.user.username }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                                            <div class="text-sm leading-5 text-gray-700">{{ reserva.fecha_reserva }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {% if reserva.estado == 'Confirmada' %}
+                                                    bg-green-300 text-black
+                                                {% elif reserva.estado == 'Pendiente' %}
+                                                    bg-yellow-300 text-black
+                                                {% else %}
+                                                    bg-red-300 text-black
+                                                {% endif %}">
+                                                {{ reserva.estado }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                                            <div class="text-sm leading-5 text-gray-700">${{ reserva.precio }}</div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-sm leading-5 text-gray-700">
+                                            No hay reservas registradas.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>
